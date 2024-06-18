@@ -4,19 +4,13 @@ from telegram.ext import ApplicationBuilder, CallbackContext, CommandHandler, Me
 
 import json
 
-async def launch_web_ui(update: Update, callback: CallbackContext):
-    # For now, let's just acknowledge that we received the command
-    await update.effective_chat.send_message("I hear you loud and clear !")
-
-
-
 
 async def launch_web_ui(update: Update, callback: CallbackContext):
     # display our web-app!
     kb = [
         [KeyboardButton(
             "Show me my Web-App!",
-           web_app=WebAppInfo("https://calixtemayoraz.gitlab.io/web-interfacer-bot/") # obviously, set yours here.
+           web_app=WebAppInfo("https://amirhosein24.github.io/tel_game/")  # obviously, set yours here.
         )]
     ]
     await update.message.reply_text("Let's do this...", reply_markup=ReplyKeyboardMarkup(kb))
@@ -31,7 +25,7 @@ async def web_app_data(update: Update, context: CallbackContext):
 
 if __name__ == '__main__':
     # when we run the script we want to first create the bot from the token:
-    application = ApplicationBuilder().token("--").build()
+    application = ApplicationBuilder().token("6718767370:AAFsMD2htTWp0jHxRng6gdTsCLqbIEr4QSg").build()
     application.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, web_app_data))
     # and let's set a command listener for /start to trigger our Web UI
     application.add_handler(CommandHandler('start', launch_web_ui))
