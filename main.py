@@ -3,7 +3,7 @@ from telegram.ext import ApplicationBuilder, CallbackContext, CommandHandler, Me
 
 
 import json
-
+from creds import bot_token
 
 async def launch_web_ui(update: Update, callback: CallbackContext):
     # display our web-app!
@@ -25,7 +25,7 @@ async def web_app_data(update: Update, context: CallbackContext):
 
 if __name__ == '__main__':
     # when we run the script we want to first create the bot from the token:
-    application = ApplicationBuilder().token("6718767370:AAFsMD2htTWp0jHxRng6gdTsCLqbIEr4QSg").build()
+    application = ApplicationBuilder().token(bot_token).build()
     application.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, web_app_data))
     # and let's set a command listener for /start to trigger our Web UI
     application.add_handler(CommandHandler('start', launch_web_ui))
