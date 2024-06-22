@@ -1,12 +1,15 @@
 
-from telegram import KeyboardButton, ReplyKeyboardMarkup, WebAppInfo
+from telegram import KeyboardButton, ReplyKeyboardMarkup, WebAppInfo, InlineKeyboardMarkup
 
 
-MainPage = [
-    [
-        KeyboardButton("Show me my Web-App!",
-                       web_app=WebAppInfo("https://amirhosein24.github.io/tel_game/"))
+def main_page(chat_id):
+    key = [
+        [
+            KeyboardButton("Web-App",
+                           web_app=WebAppInfo(f"https://49.12.97.130:8020/home/{chat_id}"))
+        ]
     ]
-]
 
-MainPage = ReplyKeyboardMarkup(MainPage)
+    key = InlineKeyboardMarkup(key)
+
+    return key
