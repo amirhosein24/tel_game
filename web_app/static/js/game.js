@@ -1,5 +1,8 @@
+
 const canvas = document.getElementById('gameCanvas');
 const context = canvas.getContext('2d');
+const userId = window.location.pathname.split('/').pop();
+const websocket = new WebSocket(`ws://127.0.0.1:8020/ws/${userId}`);
 
 canvas.width = 400;
 canvas.height = 800;
@@ -53,9 +56,9 @@ function movePaddle(x) {
     player.x = x - player.width / 2;
     if (player.x < 0) player.x = 0;
     if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
-    
-    // Send updated paddle position to the server
-    sendDataToServer({ type: 'paddle', user: 'self', position: player.x });
+
+    // websocket.send(JSON.stringify({ type: 'move_paddle', userId: userId, x: player.x }));
+
 }
 
 let minAngle = 15 * Math.PI / 180; // 30 degrees in radians
@@ -86,7 +89,6 @@ function moveBall() {
                 randomizeDirection();
                 hits++;
                 ballOnUrer = false;
-                sendDataToServer({ type: 'hit', hits: hits });
             }
         }
     } else {
@@ -96,12 +98,12 @@ function moveBall() {
             ball.dy *= -1;
             randomizeDirection();
             ballOnUrer = true;
-            sendDataToServer({ type: 'hit', hits: hits });
         }
     }
 
     // Send updated ball position to the server
-    sendDataToServer({ type: 'ball', position: { x: ball.x, y: ball.y } });
+    // websocket.send(JSON.stringify({ type: 'move_ball', ball: { x: ball.x, y: ball.y, dx: ball.dx, dy: ball.dy } }));
+
 }
 
 function update() {
@@ -130,6 +132,7 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
+
 canvas.addEventListener('mousedown', function (event) {
     isMouseDown = true;
     movePaddle(event.clientX - canvas.getBoundingClientRect().left);
@@ -155,83 +158,18 @@ canvas.addEventListener('touchmove', function (event) {
     event.preventDefault();
 });
 
-// Extract user_id and room_id from URL
-const urlParams = new URLSearchParams(window.location.search);
-const userId = urlParams.get('user_id');
-const roomId = urlParams.get('room_id');
-
-// Establish WebSocket connection
-const ws = new WebSocket(`ws://${window.location.host}/ws/${roomId}/${userId}`);
-
-ws.onopen = function (event) {
-    console.log('WebSocket is open now.');
+// // Extract user_id and room_id from URL
+websocket.onmessage = function (event) {
+    const message = JSON.parse(event.data);
+    if (message.type === 'move_paddle' && message.userId !== userId) {
+        opponent.x = message.x;
+    } else if (message.type === 'move_ball') {
+        ball.x = message.ball.x;
+        ball.y = message.ball.y;
+        ball.dx = message.ball.dx;
+        ball.dy = message.ball.dy;
+    }
 };
+// Establish WebSocket connection
 
-ws.onmessage = function (event) {
-    const data = JSON.parse(event.data);
-    console.log('Message from server: ', data);
-    
-    // Update game state based on the data received from the server
-    if (data.type === 'paddle') {
-        if (data.user !== userId) {
-            opponent.x = data.position;
-        }
-    } else if (data.type === 'ball'){
-        ball.x = data.position.x;
-        ball.y = data.position.y;
-    } else if (data.type === 'hit') {
-        hits = data.hits;
-    }
-    };
-    
-    ws.onclose = function (event) {
-        console.log('WebSocket is closed now.');
-    };
-    
-    ws.onerror = function (error) {
-        console.error('WebSocket error observed:', error);
-    };
-    
-    // Function to send data to the server
-    function sendDataToServer(data) {
-        if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify(data));
-        }
-    }
-    
-    // Game loop
-    function gameLoop() {
-        update();
-        render();
-        requestAnimationFrame(gameLoop);
-    }
-    
-    // Event listeners for mouse and touch events
-    canvas.addEventListener('mousedown', function (event) {
-        isMouseDown = true;
-        movePaddle(event.clientX - canvas.getBoundingClientRect().left);
-    });
-    
-    canvas.addEventListener('mouseup', function () {
-        isMouseDown = false;
-    });
-    
-    canvas.addEventListener('mousemove', function (event) {
-        if (isMouseDown) {
-            movePaddle(event.clientX - canvas.getBoundingClientRect().left);
-        }
-    });
-    
-    canvas.addEventListener('touchstart', function (event) {
-        movePaddle(event.touches[0].clientX - canvas.getBoundingClientRect().left);
-        event.preventDefault(); // Prevent scrolling
-    });
-    
-    canvas.addEventListener('touchmove', function (event) {
-        movePaddle(event.touches[0].clientX - canvas.getBoundingClientRect().left);
-        event.preventDefault(); // Prevent scrolling
-    });
-    
-    // Start the game loop
-    gameLoop();
-    
+gameLoop();

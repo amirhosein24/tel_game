@@ -1,3 +1,4 @@
 python_telegram_bot==20.8
-fastapi
+fastapi~=0.111.0
 sqlalchemy
+uvicorn~=0.30.1
