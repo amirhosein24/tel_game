@@ -48,7 +48,9 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
         print("goiing in while   .. ")
 
         while True:
+            print("88888")
             data = await websocket.receive_text()
+            print("-------1")
             message = json.loads(data)
             print(message)
             print("---")
@@ -59,3 +61,5 @@ if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8020)
     # uvicorn.run(app, host="0.0.0.0", port=8020)
+
+
