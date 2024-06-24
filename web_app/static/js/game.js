@@ -1,7 +1,7 @@
+
 const canvas = document.getElementById('gameCanvas');
 const context = canvas.getContext('2d');
 const userId = window.location.pathname.split('/').pop();
-// const websocket = new WebSocket(`ws://127.0.0.1:8020/ws/${userId}`);
 
 canvas.width = 400;
 canvas.height = 800;
@@ -56,7 +56,7 @@ function movePaddle(x) {
     if (player.x < 0) player.x = 0;
     if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
 
-    // websocket.send(JSON.stringify({ type: 'move_paddle', userId: userId, x: player.x }));
+    sendDataToServer({ type: 'move_paddle', userId: userId, x: player.x});
 }
 
 let minAngle = 15 * Math.PI / 180; // 30 degrees in radians
@@ -99,7 +99,6 @@ function moveBall() {
         }
     }
     sendDataToServer({ type: 'ball', position: { x: ball.x, y: ball.y } });
-    // websocket.send(JSON.stringify({ type: 'move_ball', ball: { x: ball.x, y: ball.y, dx: ball.dx, dy: ball.dy } }));
 }
 
 function update() {
@@ -122,11 +121,6 @@ function render() {
     drawArc(ball.x, ball.y, ball.radius, ball.color);
 }
 
-function gameLoop() {
-    update();
-    render();
-    requestAnimationFrame(gameLoop);
-}
 
 canvas.addEventListener('mousedown', function (event) {
     isMouseDown = true;
@@ -153,20 +147,6 @@ canvas.addEventListener('touchmove', function (event) {
     event.preventDefault();
 });
 
-// websocket.onmessage = function (event) {
-//     const message = JSON.parse(event.data);
-//
-//     if (message.type === 'move_paddle' && message.userId !== userId) {
-//         opponent.x = message.x;
-//     } else if (message.type === 'move_ball') {
-//         ball.x = message.ball.x;
-//         ball.y = message.ball.y;
-//         ball.dx = message.ball.dx;
-//         ball.dy = message.ball.dy;
-//     }
-// };
-
-// const websocket = new WebSocket(`ws://127.0.0.1:8020/ws/${userId}`);
 
 const ws = new WebSocket(`ws://127.0.0.1:8020/ws/${userId}`);
 function sendDataToServer(data) {
@@ -175,5 +155,24 @@ function sendDataToServer(data) {
     }
 }
 
+// ws.onmessage = function(event) {
+//     const message = JSON.parse(event.data);
+//     console.log('Message from server:', message);
+//
+//     // Example: Handle specific server message
+//     if (message.type === 'server_message') {
+//         alert(message.content);
+//     }
+//
+//     if (message.type === 'opponent_paddle') {
+//         opponent.x = message.x;
+//     }
+// };
+
+function gameLoop() {
+    update();
+    render();
+    requestAnimationFrame(gameLoop);
+}
 
 gameLoop();
