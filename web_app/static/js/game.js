@@ -56,7 +56,7 @@ function movePaddle(x) {
     if (player.x < 0) player.x = 0;
     if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
 
-    sendDataToServer({ type: 'move_paddle', userId: userId, x: player.x});
+    sendDataToServer({ type: 'paddle', [userId]: player.x });
 }
 
 let minAngle = 15 * Math.PI / 180; // 30 degrees in radians
@@ -98,7 +98,7 @@ function moveBall() {
             ballOnUrer = true;
         }
     }
-    sendDataToServer({ type: 'ball', position: { x: ball.x, y: ball.y } });
+    sendDataToServer({ type: 'ball', position: [ ball.x, ball.y ] });
 }
 
 function update() {
@@ -155,19 +155,15 @@ function sendDataToServer(data) {
     }
 }
 
-// ws.onmessage = function(event) {
-//     const message = JSON.parse(event.data);
-//     console.log('Message from server:', message);
-//
-//     // Example: Handle specific server message
-//     if (message.type === 'server_message') {
-//         alert(message.content);
-//     }
-//
-//     if (message.type === 'opponent_paddle') {
-//         opponent.x = message.x;
-//     }
-// };
+
+ws.onmessage = function(event) {
+    const message = JSON.parse(event.data);
+
+    if (message.type === 'opponent_paddle') {
+        opponent.x = message.x;
+    }
+};
+
 
 function gameLoop() {
     update();

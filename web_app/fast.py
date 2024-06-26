@@ -26,11 +26,11 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from pathlib import Path
+import json
 
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
 
 @app.get("/home/{user_id}", response_class=HTMLResponse)
 async def read_index(user_id: str):
@@ -38,28 +38,42 @@ async def read_index(user_id: str):
     print(index_file)
     return index_file.read_text()
 
-import json
+all_data = {"1234": {}}
 
 @app.websocket("/ws/{user_id}")
 async def websocket_endpoint(websocket: WebSocket, user_id: str):
     await websocket.accept()
-    print("web socket active..................")
-    try:
-        print("goiing in while   .. ")
 
+
+    print("WebSocket active for user:", user_id)
+
+    try:
         while True:
-            print("88888")
-            data = await websocket.receive_text()
-            print("-------1")
-            message = json.loads(data)
-            print(message)
-            print("---")
+            datar = await websocket.receive_text()
+            message = json.loads(datar)
+
+            if message["type"] == "ball":
+                all_data["1234"]["ball"] = message["position"]
+
+            elif message["type"] == "paddle":
+                all_data["1234"][user_id] = [message[user_id], websocket]
+
+                for uid in all_data["1234"].keys():
+                    if uid != user_id and uid != "ball":
+                        await all_data["1234"][uid][1].send_text(json.dumps({
+                            "type": "opponent_paddle",
+                            "userId": user_id,
+                            "x": message[user_id]
+                        }))
+
+            # print(all_data)
+
     except WebSocketDisconnect:
-        print("WebSocket disconnected.....")
+        print("WebSocket disconnected for user:", user_id)
+
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8020)
+
     # uvicorn.run(app, host="0.0.0.0", port=8020)
-
-
