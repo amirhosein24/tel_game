@@ -5,18 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusText = document.getElementById('username-status');
     const loginContainer = document.getElementById('login-container');
     const homeContainer = document.getElementById('home-container');
-    const websocket = new WebSocket('ws://localhost:80000/ws');
+    const websocket = new WebSocket('ws://localhost:8020/ws');
 
-    // Log WebSocket connection status
-    websocket.onopen = () => {
-        // console.log("WebSocket connection established");
-    };
-    websocket.onerror = (error) => {
-        // console.error("WebSocket error:", error);
-    };
-    websocket.onclose = () => {
-        // console.log("WebSocket connection closed");
-    };
 
     websocket.onmessage = (event) => {
         statusText.textContent = event.data;
@@ -34,10 +24,16 @@ document.addEventListener('DOMContentLoaded', () => {
     checkButton.addEventListener('click', () => {
         const username = usernameInput.value;
         if (username) {
-            // console.log("Sending username:", username);
-            websocket.send(username);
-            statusText.textContent = "user name senf to serverrrrr";
+            statusText.textContent = "username in";
 
+            if (websocket.readyState === WebSocket.OPEN) {
+                statusText.textContent = "goiing senddddd";
+                websocket.send(username);
+                statusText.textContent = "sent wowwwwwwwwww";
+
+            } else {
+                statusText.textContent = "no connectionnnnnnnnn";
+            }
         } else {
             statusText.textContent = "Please enter a username";
             statusText.style.color = "red";

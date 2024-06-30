@@ -1,10 +1,38 @@
+<!-- frontend/index.html -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Games</title>
+    <link rel="stylesheet" href="styles/styles.css">
 </head>
+
 <body>
-$END$
+    <div id="background-animation"></div>
+    <div class="container" id="login-container">
+        <h1>Welcome to Mini Games</h1>
+        <input type="text" id="username" placeholder="Enter your username">
+        <button id="check-username">Check Availability</button>
+        <p id="username-status"></p>
+    </div>
+
+    <div class="container" id="home-container" style="display: none;">
+        <div class="navbar">
+            <button id="btn-games">Games</button>
+            <button id="btn-tournaments">Tournaments</button>
+            <button id="btn-news">News</button>
+            <button id="btn-friends">Friends</button>
+            <button id="btn-profile">Profile</button>
+        </div>
+        <div id="content">
+            <h2>Welcome to the Home Page</h2>
+            <p>Select an option from the navigation bar below.</p>
+        </div>
+    </div>
+
+    <script src="scripts/main.js"></script>
 </body>
+
 </html>

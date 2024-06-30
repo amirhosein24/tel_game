@@ -30,7 +30,8 @@ import json
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="web_app/static"), name="static")
+
 
 @app.get("/home/{user_id}", response_class=HTMLResponse)
 async def read_index(user_id: str):
@@ -40,10 +41,10 @@ async def read_index(user_id: str):
 
 all_data = {"1234": {}}
 
+
 @app.websocket("/ws/{user_id}")
 async def websocket_endpoint(websocket: WebSocket, user_id: str):
     await websocket.accept()
-
 
     print("WebSocket active for user:", user_id)
 
