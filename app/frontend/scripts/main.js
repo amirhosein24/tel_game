@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusText = document.getElementById('username-status');
     const loginContainer = document.getElementById('login-container');
     const homeContainer = document.getElementById('home-container');
-    const websocket = new WebSocket('ws://localhost:8020/ws');
+    const websocket = new WebSocket('ws://localhost:8020/ws/chat');
 
 
     websocket.onmessage = (event) => {

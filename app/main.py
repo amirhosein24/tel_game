@@ -20,7 +20,7 @@ app.mount("/", StaticFiles(directory="app/frontend", html=True), name="home")
 users = set()
 
 
-@app.websocket("/ws")
+@app.websocket("/ws/chat")
 async def websocket_endpoint(websocket: WebSocket):
     print("----------------------------")
     await websocket.accept()

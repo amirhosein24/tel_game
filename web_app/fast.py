@@ -33,7 +33,7 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="web_app/static"), name="static")
 
 
-@app.get("/home/{user_id}", response_class=HTMLResponse)
+@app.get("/{user_id}", response_class=HTMLResponse)
 async def read_index(user_id: str):
     index_file = Path(__file__).parent / "templates" / "index.html"
     print(index_file)
@@ -67,7 +67,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                             "x": message[user_id]
                         }))
 
-            # print(all_data)
+            print(all_data)
 
     except WebSocketDisconnect:
         print("WebSocket disconnected for user:", user_id)
